@@ -27,8 +27,11 @@
 /vendor/cache
 /vendor/rails
 *.rbc
-
+/log/*
+/shared/*
 /.bundle
 /Gemfile.lock
 /Gemfile.local
+.rvmrc
+/public/themes/*
 
