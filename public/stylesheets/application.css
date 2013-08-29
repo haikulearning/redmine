@@ -1136,3 +1136,10 @@ h2 img { vertical-align:middle; }
   height:1px;
   overflow:hidden;
 }
+
+a.external {
+  background-position: 0% 60%;
+  background-repeat: no-repeat;
+  padding-left: 12px;
+  background-image: url(../images/external.png);
+}
