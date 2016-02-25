@@ -844,7 +844,7 @@ class RedCloth3 < String
             atts << " title=\"#{ htmlesc title }\"" if title
             atts = shelve( atts ) if atts
             
-            external = (url =~ /^https?:\/\//) ? ' class="external"' : ''
+            external = (url =~ /^https?:\/\//) ? ' class="external" target="_blank"' : ''
             
             "#{ pre }<a#{ atts }#{ external }>#{ text }</a>#{ post }"
           end
