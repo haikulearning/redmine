@@ -16,6 +16,7 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 require 'cgi'
+require 'redmine/scm/adapters'
 
 if RUBY_VERSION < '1.9'
   require 'iconv'
@@ -24,9 +25,6 @@ end
 module Redmine
   module Scm
     module Adapters
-      class CommandFailed < StandardError #:nodoc:
-      end
-
       class AbstractAdapter #:nodoc:
 
         # raised if scm command exited with error, e.g. unknown revision.
