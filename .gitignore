@@ -1,11 +1,11 @@
 /.log/*
 /.shared/*
-.rvmrc
 /public/themes/*
 /.project
 /.loadpath
 /.powrc
 /.rvmrc
+/.ruby-*
 /config/additional_environment.rb
 /config/configuration.yml
 /config/database.yml
