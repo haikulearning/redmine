@@ -1,7 +1,7 @@
 # encoding: utf-8
 #
 # Redmine - project management software
-# Copyright (C) 2006-2013  Jean-Philippe Lang
+# Copyright (C) 2006-2014  Jean-Philippe Lang
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -155,6 +155,10 @@ module QueriesHelper
     when 'IssueRelation'
       other = value.other_issue(issue)
       l(value.label_for(issue)) + " ##{other.id}"
+    when 'TrueClass'
+      l(:general_text_Yes)
+    when 'FalseClass'
+      l(:general_text_No)
     else
       value.to_s
     end

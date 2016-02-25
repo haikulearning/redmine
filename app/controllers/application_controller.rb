@@ -1,5 +1,5 @@
 # Redmine - project management software
-# Copyright (C) 2006-2013  Jean-Philippe Lang
+# Copyright (C) 2006-2014  Jean-Philippe Lang
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -44,6 +44,7 @@ class ApplicationController < ActionController::Base
     unless api_request?
       super
       cookies.delete(autologin_cookie_name)
+      self.logged_user = nil
       render_error :status => 422, :message => "Invalid form authenticity token."
     end
   end
@@ -375,22 +376,41 @@ class ApplicationController < ActionController::Base
 
   def redirect_back_or_default(default)
     back_url = params[:back_url].to_s
-    if back_url.present?
-      begin
-        uri = URI.parse(back_url)
-        # do not redirect user to another host or to the login or register page
-        if (uri.relative? || (uri.host == request.host)) && !uri.path.match(%r{/(login|account/register)})
-          redirect_to(back_url)
-          return
-        end
-      rescue URI::InvalidURIError
-        logger.warn("Could not redirect to invalid URL #{back_url}")
-        # redirect to default
-      end
+    if back_url.present? && valid_back_url?(back_url)
+      redirect_to(back_url)
+      return
     end
     redirect_to default
     false
   end
+
+  # Returns true if back_url is a valid url for redirection, otherwise false
+  def valid_back_url?(back_url)
+    if CGI.unescape(back_url).include?('..')
+      return false
+    end
+
+    begin
+      uri = URI.parse(back_url)
+    rescue URI::InvalidURIError
+      return false
+    end
+
+    if uri.host.present? && uri.host != request.host
+      return false
+    end
+
+    if uri.path.match(%r{/(login|account/register)})
+      return false
+    end
+
+    if relative_url_root.present? && !uri.path.starts_with?(relative_url_root)
+      return false
+    end
+
+    return true
+  end
+  private :valid_back_url?
 
   # Redirects to the request referer if present, redirects to args or call block otherwise.
   def redirect_to_referer_or(*args, &block)
@@ -554,7 +574,7 @@ class ApplicationController < ActionController::Base
 
   # Returns a string that can be used as filename value in Content-Disposition header
   def filename_for_content_disposition(name)
-    request.env['HTTP_USER_AGENT'] =~ %r{MSIE} ? ERB::Util.url_encode(name) : name
+    request.env['HTTP_USER_AGENT'] =~ %r{(MSIE|Trident)} ? ERB::Util.url_encode(name) : name
   end
 
   def api_request?

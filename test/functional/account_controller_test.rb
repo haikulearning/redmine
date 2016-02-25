@@ -1,5 +1,5 @@
 # Redmine - project management software
-# Copyright (C) 2006-2013  Jean-Philippe Lang
+# Copyright (C) 2006-2014  Jean-Philippe Lang
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -43,13 +43,61 @@ class AccountControllerTest < ActionController::TestCase
 
   def test_login_should_redirect_to_back_url_param
     # request.uri is "test.host" in test environment
-    post :login, :username => 'jsmith', :password => 'jsmith', :back_url => 'http://test.host/issues/show/1'
-    assert_redirected_to '/issues/show/1'
+    back_urls = [
+      'http://test.host/issues/show/1',
+      '/'
+    ]
+    back_urls.each do |back_url|
+      post :login, :username => 'jsmith', :password => 'jsmith', :back_url => back_url
+      assert_redirected_to back_url
+    end
+  end
+
+  def test_login_with_suburi_should_redirect_to_back_url_param
+    @relative_url_root = ApplicationController.relative_url_root
+    ApplicationController.relative_url_root = '/redmine'
+
+    back_urls = [
+      'http://test.host/redmine/issues/show/1',
+      '/redmine'
+    ]
+    back_urls.each do |back_url|
+      post :login, :username => 'jsmith', :password => 'jsmith', :back_url => back_url
+      assert_redirected_to back_url
+    end
+  ensure
+    ApplicationController.relative_url_root = @relative_url_root
   end
 
   def test_login_should_not_redirect_to_another_host
-    post :login, :username => 'jsmith', :password => 'jsmith', :back_url => 'http://test.foo/fake'
-    assert_redirected_to '/my/page'
+    back_urls = [
+      'http://test.foo/fake',
+      '//test.foo/fake'
+    ]
+    back_urls.each do |back_url|
+      post :login, :username => 'jsmith', :password => 'jsmith', :back_url => back_url
+      assert_redirected_to '/my/page'
+    end
+  end
+
+  def test_login_with_suburi_should_not_redirect_to_another_suburi
+    @relative_url_root = ApplicationController.relative_url_root
+    ApplicationController.relative_url_root = '/redmine'
+
+    back_urls = [
+      'http://test.host/',
+      'http://test.host/fake',
+      'http://test.host/fake/issues',
+      'http://test.host/redmine/../fake',
+      'http://test.host/redmine/../fake/issues',
+      'http://test.host/redmine/%2e%2e/fake'
+    ]
+    back_urls.each do |back_url|
+      post :login, :username => 'jsmith', :password => 'jsmith', :back_url => back_url
+      assert_redirected_to '/my/page'
+    end
+  ensure
+    ApplicationController.relative_url_root = @relative_url_root
   end
 
   def test_login_with_wrong_password

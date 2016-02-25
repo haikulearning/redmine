@@ -1,5 +1,5 @@
 # Redmine - project management software
-# Copyright (C) 2006-2013  Jean-Philippe Lang
+# Copyright (C) 2006-2014  Jean-Philippe Lang
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -109,6 +109,14 @@ class ActiveSupport::TestCase
     yield
   ensure
     User.current = saved_user
+  end
+
+  def with_locale(locale, &block)
+    saved_localed = ::I18n.locale
+    ::I18n.locale = locale
+    yield
+  ensure
+    ::I18n.locale = saved_localed
   end
 
   def change_user_password(login, new_password)

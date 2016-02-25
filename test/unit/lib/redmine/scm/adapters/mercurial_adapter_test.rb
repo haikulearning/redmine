@@ -1,5 +1,5 @@
 # Redmine - project management software
-# Copyright (C) 2006-2013  Jean-Philippe Lang
+# Copyright (C) 2006-2014  Jean-Philippe Lang
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -89,8 +89,8 @@ begin
           adp = Redmine::Scm::Adapters::MercurialAdapter.new(repo)
           repo_path =  adp.info.root_url.gsub(/\\/, "/")
           assert_equal REPOSITORY_PATH, repo_path
-          assert_equal '31', adp.info.lastrev.revision
-          assert_equal '31eeee7395c8',adp.info.lastrev.scmid
+          assert_equal '33', adp.info.lastrev.revision
+          assert_equal '2e6d54642923',adp.info.lastrev.scmid
         end
       end
 

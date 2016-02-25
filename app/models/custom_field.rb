@@ -1,5 +1,5 @@
 # Redmine - project management software
-# Copyright (C) 2006-2013  Jean-Philippe Lang
+# Copyright (C) 2006-2014  Jean-Philippe Lang
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -350,10 +350,10 @@ class CustomField < ActiveRecord::Base
   # Returns the error message for the given value regarding its format
   def validate_field_value_format(value)
     errs = []
-    if value.present?
+    unless value.to_s == ''
       errs << ::I18n.t('activerecord.errors.messages.invalid') unless regexp.blank? or value =~ Regexp.new(regexp)
-      errs << ::I18n.t('activerecord.errors.messages.too_short', :count => min_length) if min_length > 0 and value.length < min_length
-      errs << ::I18n.t('activerecord.errors.messages.too_long', :count => max_length) if max_length > 0 and value.length > max_length
+      errs << ::I18n.t('activerecord.errors.messages.too_short', :count => min_length) if min_length && min_length > 0 && value.length < min_length
+      errs << ::I18n.t('activerecord.errors.messages.too_long', :count => max_length) if max_length && max_length > 0 && value.length > max_length
 
       # Format specific validations
       case field_format

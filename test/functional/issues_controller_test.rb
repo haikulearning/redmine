@@ -1,5 +1,5 @@
 # Redmine - project management software
-# Copyright (C) 2006-2013  Jean-Philippe Lang
+# Copyright (C) 2006-2014  Jean-Philippe Lang
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -1393,6 +1393,22 @@ class IssuesControllerTest < ActionController::TestCase
     assert_equal 'application/pdf', @response.content_type
     assert @response.body.starts_with?('%PDF')
     assert_not_nil assigns(:issue)
+  end
+
+  def test_export_to_pdf_with_utf8_u_fffd
+    # U+FFFD
+    s = "\xef\xbf\xbd"
+    s.force_encoding('UTF-8') if s.respond_to?(:force_encoding)
+    issue = Issue.generate!(:subject => s)
+    ["en", "zh", "zh-TW", "ja", "ko"].each do |lang|
+      with_settings :default_language => lang do
+        get :show, :id => issue.id, :format => 'pdf'
+        assert_response :success
+        assert_equal 'application/pdf', @response.content_type
+        assert @response.body.starts_with?('%PDF')
+        assert_not_nil assigns(:issue)
+      end
+    end
   end
 
   def test_show_export_to_pdf_with_ancestors

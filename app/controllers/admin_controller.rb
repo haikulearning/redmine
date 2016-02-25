@@ -1,5 +1,5 @@
 # Redmine - project management software
-# Copyright (C) 2006-2013  Jean-Philippe Lang
+# Copyright (C) 2006-2014  Jean-Philippe Lang
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -65,7 +65,7 @@ class AdminController < ApplicationController
       @test = Mailer.test_email(User.current).deliver
       flash[:notice] = l(:notice_email_sent, User.current.mail)
     rescue Exception => e
-      flash[:error] = l(:notice_email_error, Redmine::CodesetUtil.replace_invalid_utf8(e.message))
+      flash[:error] = l(:notice_email_error, Redmine::CodesetUtil.replace_invalid_utf8(e.message.dup))
     end
     ActionMailer::Base.raise_delivery_errors = raise_delivery_errors
     redirect_to settings_path(:tab => 'notifications')
